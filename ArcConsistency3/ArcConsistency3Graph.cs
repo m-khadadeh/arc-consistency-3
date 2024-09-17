@@ -4,8 +4,8 @@
   {    
     // Nodes are just a set of their possible values.
     // We'll store them in an array because the number of nodes won't change
-    private HashSet<T>[] _nodes;
-    private HashSet<T>[] _initialConditions;
+    private List<T>[] _nodes;
+    private List<T>[] _initialConditions;
 
     // We'll store a bool for whether a node has been set or not.
     private bool[] _setNodes;
@@ -14,7 +14,7 @@
     private List<Arc<T>>[] _edgeLists;
 
     // We'll use a Hashset for the worklist so we dont add duplicates during propagation
-    private HashSet<Arc<T>> _workList;
+    private Queue<Arc<T>> _workList;
 
     public IEnumerable<T>[] Nodes {
       get { return _nodes; }
@@ -22,8 +22,7 @@
 
     private bool Propagate() {
       while (_workList.Count > 0) {
-        Arc<T> arc = _workList.ElementAt(0);
-        _workList.Remove(arc);
+        Arc<T> arc = _workList.Dequeue();
 
         if(arc.ApplyConstrainer(_nodes[arc.SourceIndex], _nodes[arc.TargetIndex])) {
           // A change was made upon application of the rule.
@@ -35,7 +34,7 @@
           // Queue up arcs coming from target
           foreach(var outGoingArc in _edgeLists[arc.TargetIndex]) {
             if(outGoingArc.SourceIndex != arc.SourceIndex) {
-              _workList.Add(outGoingArc);
+              _workList.Enqueue(outGoingArc);
             }
           }
         }
@@ -58,7 +57,7 @@
       _nodes[nodeIndex].Add(nodeValue);
 
       foreach(var arc in _edgeLists[nodeIndex]) {
-        _workList.Add(arc);
+        _workList.Enqueue(arc);
       }
 
       return Propagate();
@@ -72,11 +71,11 @@
 
       for(int i = 0; i < _nodes.Length; i++) {
         if(!_setNodes[i]) {
-          _nodes[i] = new HashSet<T>(_initialConditions[i]);
+          _nodes[i] = new List<T>(_initialConditions[i]);
         }
         foreach(var arc in _edgeLists[i]) {
           if(!_setNodes[arc.TargetIndex]) {
-            _workList.Add(arc);
+            _workList.Enqueue(arc);
           }
         }
       }
@@ -84,7 +83,7 @@
       return Propagate();
     }
     
-    public ArcConsistency3Graph(HashSet<T>[] nodes, List<Arc<T>> arcs) {
+    public ArcConsistency3Graph(List<T>[] nodes, List<Arc<T>> arcs) {
       _initialConditions = nodes;
       
       // Convert arc list into edge list
@@ -96,18 +95,18 @@
         _edgeLists[arc.SourceIndex].Add(arc);
       }
 
-      _nodes = new HashSet<T>[_initialConditions.Length];
+      _nodes = new List<T>[_initialConditions.Length];
       _setNodes = new bool[_nodes.Length];
-      _workList = new HashSet<Arc<T>>();
+      _workList = new Queue<Arc<T>>();
       ResetToInitialConditions();
     }
 
     public void ResetToInitialConditions() {
       for (int i = 0; i < _nodes.Length; i++) {
-        _nodes[i] = new HashSet<T>(_initialConditions[i]);
+        _nodes[i] = new List<T>(_initialConditions[i]);
         _setNodes[i] = false;
         foreach(var edge in _edgeLists[i]) {
-          _workList.Add(edge);
+          _workList.Enqueue(edge);
         }
       }
       if(!Propagate()) {

@@ -4,42 +4,42 @@ namespace ArcConsistency3.Tests{
   public class QueensTests {
     int[] domain = {0, 1, 2, 3};
 
-    bool QueensConstrainer(HashSet<int> sourceSet, HashSet<int> targetSet, int distance) {
-      int initialTargetSetCount = targetSet.Count;
+    bool QueensConstrainer(List<int> sourceList, List<int> targetList, int distance) {
+      int initialtargetListCount = targetList.Count;
 
-      Dictionary<int, int> countsForRemoval = targetSet.ToDictionary(x => x, x => 0);
+      Dictionary<int, int> countsForRemoval = targetList.ToDictionary(x => x, x => 0);
 
-      foreach(var possibility in sourceSet) {
-        if(targetSet.Contains(possibility)) {
+      foreach(var possibility in sourceList) {
+        if(targetList.Contains(possibility)) {
           // Target is vertically on the same line.
           countsForRemoval[possibility]++;
         }
-        if(targetSet.Contains(possibility - distance)) {
+        if(targetList.Contains(possibility - distance)) {
           // Target is on the incoming diagonal line
           countsForRemoval[possibility - distance]++;
         }
-        if(targetSet.Contains(possibility + distance)) {
+        if(targetList.Contains(possibility + distance)) {
           // Target is on the outgoing diagonal line
           countsForRemoval[possibility + distance]++;
         }
       }
 
       foreach(var count in countsForRemoval) {
-        if(count.Value == sourceSet.Count) {
-          // This element of the targetSet has been removed by every element of the sourceSet.
+        if(count.Value == sourceList.Count) {
+          // This element of the targetList has been removed by every element of the sourceList.
           // Remove it
-          targetSet.Remove(count.Key);
+          targetList.Remove(count.Key);
         }
       }
 
-      return initialTargetSetCount != targetSet.Count;
+      return initialtargetListCount != targetList.Count;
     }
 
     [Fact]
     public void TestFourQueensWithBacktracking() {
-      HashSet<int>[] nodes = new HashSet<int>[domain.Length];
+      List<int>[] nodes = new List<int>[domain.Length];
       for(int i = 0; i < nodes.Length; i++) {
-        nodes[i] = domain.ToHashSet();
+        nodes[i] = domain.ToList();
       }
 
       List<Arc<int>> arcs = new List<Arc<int>>();
@@ -47,10 +47,10 @@ namespace ArcConsistency3.Tests{
         for(int distance = 1; distance < domain.Length; distance++) {
           int tileDistance = distance;
           if(startNode - distance >= 0){
-            arcs.Add(new Arc<int>(startNode, startNode - distance, (HashSet<int> sourceSet, HashSet<int> targetSet) => QueensConstrainer(sourceSet, targetSet, tileDistance)));
+            arcs.Add(new Arc<int>(startNode, startNode - distance, (List<int> sourceList, List<int> targetList) => QueensConstrainer(sourceList, targetList, tileDistance)));
           }
           if(startNode + distance < domain.Length){
-            arcs.Add(new Arc<int>(startNode, startNode + distance, (HashSet<int> sourceSet, HashSet<int> targetSet) => QueensConstrainer(sourceSet, targetSet, tileDistance)));
+            arcs.Add(new Arc<int>(startNode, startNode + distance, (List<int> sourceList, List<int> targetList) => QueensConstrainer(sourceList, targetList, tileDistance)));
           }
         }
       }

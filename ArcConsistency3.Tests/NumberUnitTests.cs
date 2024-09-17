@@ -6,26 +6,26 @@ namespace ArcConsistency3.Tests
   {
     List<int> domain = new List<int>() {1,2,3,4,5,6,7};
 
-    bool ConstrainerNotEqual(HashSet<int> sourceSet, HashSet<int> targetSet) {
-      int initialTargetSetCount = targetSet.Count;
-      if(sourceSet.Count == 1) {
-      targetSet.Remove(sourceSet.First());
-      return targetSet.Count != initialTargetSetCount;
+    bool ConstrainerNotEqual(List<int> sourceList, List<int> targetList) {
+      int initialtargetListCount = targetList.Count;
+      if(sourceList.Count == 1) {
+      targetList.Remove(sourceList.First());
+      return targetList.Count != initialtargetListCount;
       }
       return false;
     }
 
-    bool ConstrainerEqual(HashSet<int> sourceSet, HashSet<int> targetSet) {
-      int initialTargetSetCount = targetSet.Count;
-      targetSet.IntersectWith(sourceSet);
-      return targetSet.Count != initialTargetSetCount;
+    bool ConstrainerEqual(List<int> sourceList, List<int> targetList) {
+      int initialtargetListCount = targetList.Count;
+      targetList.RemoveAll(e => !sourceList.Contains(e));
+      return targetList.Count != initialtargetListCount;
     }
 
-    bool ConstrainerDifferentParity(HashSet<int> sourceSet, HashSet<int> targetSet) {
-      int initialTargetSetCount = targetSet.Count;
+    bool ConstrainerDifferentParity(List<int> sourceList, List<int> targetList) {
+      int initialtargetListCount = targetList.Count;
       int parity = -1;
       int parityCount = 0;
-      foreach(var number in sourceSet) {
+      foreach(var number in sourceList) {
       if(number % 2 != parity) {
         parity = number % 2;
         parityCount++;
@@ -34,15 +34,15 @@ namespace ArcConsistency3.Tests
         }
       }
       }
-      targetSet.RemoveWhere((e) => e % 2 == parity);
-      return targetSet.Count != initialTargetSetCount;
+      targetList.RemoveAll((e) => e % 2 == parity);
+      return targetList.Count != initialtargetListCount;
     }
 
-    bool ConstrainerSameParity(HashSet<int> sourceSet, HashSet<int> targetSet) {
-      int initialTargetSetCount = targetSet.Count;
+    bool ConstrainerSameParity(List<int> sourceList, List<int> targetList) {
+      int initialtargetListCount = targetList.Count;
       int parity = -1;
       int parityCount = 0;
-      foreach(var number in sourceSet) {
+      foreach(var number in sourceList) {
       if(number % 2 != parity) {
         parity = number % 2;
         parityCount++;
@@ -51,32 +51,32 @@ namespace ArcConsistency3.Tests
         }
       }
       }
-      targetSet.RemoveWhere((e) => e % 2 != parity);
-      return targetSet.Count != initialTargetSetCount;
+      targetList.RemoveAll((e) => e % 2 != parity);
+      return targetList.Count != initialtargetListCount;
     }
 
-    bool ConstrainerGreaterThan(HashSet<int> sourceSet, HashSet<int> targetSet) {
-      int initialTargetSetCount = targetSet.Count;
+    bool ConstrainerGreaterThan(List<int> sourceList, List<int> targetList) {
+      int initialtargetListCount = targetList.Count;
       int max = int.MinValue;
-      foreach(var number in sourceSet) {
+      foreach(var number in sourceList) {
       if(number > max) {
         max = number;
       }
       }
-      targetSet.RemoveWhere((e) => e >= max);
-      return targetSet.Count != initialTargetSetCount;
+      targetList.RemoveAll((e) => e >= max);
+      return targetList.Count != initialtargetListCount;
     }
 
-    bool ConstrainerLessThan(HashSet<int> sourceSet, HashSet<int> targetSet) {
-      int initialTargetSetCount = targetSet.Count;
+    bool ConstrainerLessThan(List<int> sourceList, List<int> targetList) {
+      int initialtargetListCount = targetList.Count;
       int min = int.MaxValue;
-      foreach(var number in sourceSet) {
+      foreach(var number in sourceList) {
       if(number < min) {
         min = number;
       }
       }
-      targetSet.RemoveWhere((e) => e <= min);
-      return targetSet.Count != initialTargetSetCount;
+      targetList.RemoveAll((e) => e <= min);
+      return targetList.Count != initialtargetListCount;
     }
 
     ArcConsistency3Graph<int> graph;
@@ -84,7 +84,7 @@ namespace ArcConsistency3.Tests
     [Fact]
     public void TestGraphCreation() {
       graph = new ArcConsistency3Graph<int>(
-      new HashSet<int>[] {domain.ToHashSet(), domain.ToHashSet(), domain.ToHashSet(), domain.ToHashSet()},
+      new List<int>[] {domain.ToList(), domain.ToList(), domain.ToList(), domain.ToList()},
         new List<Arc<int>>() {
           new Arc<int>(0, 1, ConstrainerEqual),
           new Arc<int>(1, 0, ConstrainerEqual),
@@ -118,7 +118,7 @@ namespace ArcConsistency3.Tests
     [Fact]
     public void TestSetValue() {
       graph = new ArcConsistency3Graph<int>(
-      new HashSet<int>[] {domain.ToHashSet(), domain.ToHashSet(), domain.ToHashSet(), domain.ToHashSet()},
+      new List<int>[] {domain.ToList(), domain.ToList(), domain.ToList(), domain.ToList()},
         new List<Arc<int>>() {
           new Arc<int>(0, 1, ConstrainerEqual),
           new Arc<int>(1, 0, ConstrainerEqual),
@@ -157,7 +157,7 @@ namespace ArcConsistency3.Tests
     [Fact]
     public void TestUnsetValue() {
       graph = new ArcConsistency3Graph<int>(
-      new HashSet<int>[] {domain.ToHashSet(), domain.ToHashSet(), domain.ToHashSet(), domain.ToHashSet()},
+      new List<int>[] {domain.ToList(), domain.ToList(), domain.ToList(), domain.ToList()},
         new List<Arc<int>>() {
           new Arc<int>(0, 1, ConstrainerEqual),
           new Arc<int>(1, 0, ConstrainerEqual),
@@ -198,7 +198,7 @@ namespace ArcConsistency3.Tests
     [Fact]
     public void TestContradiction() {
       graph = new ArcConsistency3Graph<int>(
-      new HashSet<int>[] {domain.ToHashSet(), domain.ToHashSet()},
+      new List<int>[] {domain.ToList(), domain.ToList()},
         new List<Arc<int>>() {
           new Arc<int>(0, 1, ConstrainerNotEqual),
           new Arc<int>(1, 0, ConstrainerEqual),
@@ -212,7 +212,7 @@ namespace ArcConsistency3.Tests
     public void TestContradictionOnCreation() {
       Assert.Throws<InvalidOperationException>(() => {
           graph = new ArcConsistency3Graph<int>(
-          new HashSet<int>[] {domain.ToHashSet(), domain.ToHashSet()},
+          new List<int>[] {domain.ToList(), domain.ToList()},
           new List<Arc<int>>() {
             new Arc<int>(0, 1, ConstrainerLessThan),
             new Arc<int>(1, 0, ConstrainerLessThan),
@@ -224,7 +224,7 @@ namespace ArcConsistency3.Tests
     [Fact]
     public void TestSetSameNode() {
       graph = new ArcConsistency3Graph<int>(
-      new HashSet<int>[] {domain.ToHashSet(), domain.ToHashSet()},
+      new List<int>[] {domain.ToList(), domain.ToList()},
         new List<Arc<int>>() {
           new Arc<int>(0, 1, ConstrainerEqual),
           new Arc<int>(1, 0, ConstrainerEqual),
@@ -241,7 +241,7 @@ namespace ArcConsistency3.Tests
     [Fact]
     public void TestSetIncorrectValue() {
       graph = new ArcConsistency3Graph<int>(
-      new HashSet<int>[] {domain.ToHashSet(), domain.ToHashSet()},
+      new List<int>[] {domain.ToList(), domain.ToList()},
         new List<Arc<int>>() {
           new Arc<int>(0, 1, ConstrainerEqual),
           new Arc<int>(1, 0, ConstrainerEqual),
@@ -258,7 +258,7 @@ namespace ArcConsistency3.Tests
     [Fact]
     public void TestUnsetNonsetNode() {
       graph = new ArcConsistency3Graph<int>(
-      new HashSet<int>[] {domain.ToHashSet(), domain.ToHashSet()},
+      new List<int>[] {domain.ToList(), domain.ToList()},
         new List<Arc<int>>() {
           new Arc<int>(0, 1, ConstrainerEqual),
           new Arc<int>(1, 0, ConstrainerEqual),
@@ -273,7 +273,7 @@ namespace ArcConsistency3.Tests
     [Fact]
     public void TestIsGraphAllSet() {
       graph = new ArcConsistency3Graph<int>(
-      new HashSet<int>[] {domain.ToHashSet(), domain.ToHashSet(), domain.ToHashSet(), domain.ToHashSet()},
+      new List<int>[] {domain.ToList(), domain.ToList(), domain.ToList(), domain.ToList()},
         new List<Arc<int>>() {
           new Arc<int>(0, 1, ConstrainerEqual),
           new Arc<int>(1, 0, ConstrainerEqual),
@@ -301,7 +301,7 @@ namespace ArcConsistency3.Tests
     [Fact]
     public void TestReset() {
       graph = new ArcConsistency3Graph<int>(
-      new HashSet<int>[] {domain.ToHashSet(), domain.ToHashSet(), domain.ToHashSet(), domain.ToHashSet()},
+      new List<int>[] {domain.ToList(), domain.ToList(), domain.ToList(), domain.ToList()},
         new List<Arc<int>>() {
           new Arc<int>(0, 1, ConstrainerEqual),
           new Arc<int>(1, 0, ConstrainerEqual),
