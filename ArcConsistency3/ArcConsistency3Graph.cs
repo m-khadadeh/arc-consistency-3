@@ -33,9 +33,7 @@
           
           // Queue up arcs coming from target
           foreach(var outGoingArc in _edgeLists[arc.TargetIndex]) {
-            if(outGoingArc.SourceIndex != arc.SourceIndex) {
-              _workList.Enqueue(outGoingArc);
-            }
+            _workList.Enqueue(outGoingArc);
           }
         }
       }
