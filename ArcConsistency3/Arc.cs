@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ArcConsistency3
 {
   public class Arc<T> {
