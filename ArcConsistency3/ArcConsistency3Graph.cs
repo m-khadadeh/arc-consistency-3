@@ -1,4 +1,7 @@
-﻿namespace ArcConsistency3
+using System;
+using System.Collections.Generic;
+
+namespace ArcConsistency3
 {
   public class ArcConsistency3Graph<T>
   {    
