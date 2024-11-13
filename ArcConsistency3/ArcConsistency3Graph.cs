@@ -16,7 +16,6 @@ namespace ArcConsistency3
     // The index of this array will be the index of the source node of the arcs
     private List<Arc<T>>[] _edgeLists;
 
-    // We'll use a Hashset for the worklist so we dont add duplicates during propagation
     private Queue<Arc<T>> _workList;
 
     public IEnumerable<T>[] Nodes {
